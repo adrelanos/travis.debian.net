@@ -9,3 +9,4 @@ script:
 
 if:
   tag IS blank
+
