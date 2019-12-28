@@ -28,7 +28,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 ## Functions ##################################################################
-
+set -x
 set -eu
 
 Info () {
