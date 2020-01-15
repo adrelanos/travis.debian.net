@@ -458,6 +458,7 @@ docker cp "$(cat "${CIDFILE}")":"${TRAVIS_DEBIAN_BUILD_DIR}"/ - \
 	| tar xf - -C "${TRAVIS_DEBIAN_TARGET_DIR}" --strip-components=1
 
 ## Debugging.
+ls -la "${TRAVIS_DEBIAN_BUILD_DIR}" || true
 ls -la "${TRAVIS_DEBIAN_TARGET_DIR}" || true
 
 if [ "${TRAVIS_DEBIAN_AUTOPKGTEST}" = "true" ]
@@ -487,6 +488,7 @@ fi
 Info "Build successful"
 
 ## Debugging.
+ls -la "${TRAVIS_DEBIAN_BUILD_DIR}" || true
 ls -la "${TRAVIS_DEBIAN_TARGET_DIR}" || true
 ls -la "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes || true
 
