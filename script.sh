@@ -486,6 +486,10 @@ fi
 
 Info "Build successful"
 
+## Debugging.
+ls -la "${TRAVIS_DEBIAN_TARGET_DIR}" || true
+ls -la "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes || true
+
 Info "$(basename "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes)"
 docker start "$(cat "${CIDFILE}")" >/dev/null
 Indent "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes
