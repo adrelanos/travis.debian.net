@@ -71,6 +71,7 @@ fi
 
 Info "Starting build of ${SOURCE} using travis.debian.net"
 
+## Debugging.
 whoami
 
 TAG="travis.debian.net/${SOURCE}"
@@ -448,12 +449,16 @@ Info "Running build"
 # shellcheck disable=SC2086
 docker run --env=DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:-}" --env=DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:-}" ${ARGS} "${TAG}"
 
+## Debugging.
 whoami
 
 Info "Copying build artefacts to ${TRAVIS_DEBIAN_TARGET_DIR}"
 mkdir -p "${TRAVIS_DEBIAN_TARGET_DIR}"
 docker cp "$(cat "${CIDFILE}")":"${TRAVIS_DEBIAN_BUILD_DIR}"/ - \
 	| tar xf - -C "${TRAVIS_DEBIAN_TARGET_DIR}" --strip-components=1
+
+## Debugging.
+ls -la "${TRAVIS_DEBIAN_TARGET_DIR}" || true
 
 if [ "${TRAVIS_DEBIAN_AUTOPKGTEST}" = "true" ]
 then
