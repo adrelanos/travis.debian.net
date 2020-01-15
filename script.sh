@@ -71,6 +71,8 @@ fi
 
 Info "Starting build of ${SOURCE} using travis.debian.net"
 
+whoami
+
 TAG="travis.debian.net/${SOURCE}"
 TRAVIS_DEBIAN_LINTIAN="${TRAVIS_DEBIAN_LINTIAN:-true}"
 TRAVIS_DEBIAN_BUILD_DIR="${TRAVIS_DEBIAN_BUILD_DIR:-/build}"
@@ -445,6 +447,8 @@ fi
 Info "Running build"
 # shellcheck disable=SC2086
 docker run --env=DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:-}" --env=DEB_BUILD_PROFILES="${DEB_BUILD_PROFILES:-}" ${ARGS} "${TAG}"
+
+whoami
 
 Info "Copying build artefacts to ${TRAVIS_DEBIAN_TARGET_DIR}"
 mkdir -p "${TRAVIS_DEBIAN_TARGET_DIR}"
