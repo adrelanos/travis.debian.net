@@ -293,6 +293,10 @@ fi
 
 ## Git setup #################################################################
 
+## Debugging.
+ls || true
+ls packages || true
+
 git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
 git fetch
 
