@@ -297,13 +297,18 @@ fi
 ls || true
 ls packages || true
 
-git config remote.origin.fetch '+refs/heads/*:refs/remotes/origin/*'
+## TODO
+#git config remote.origin.fetch '+refs/heads/*:refs/remoes/origin/*'
+
 git fetch
 
-for X in $(git branch -r | grep -v HEAD)
-do
-	git branch --track "$(echo "${X}" | sed -e 's@.*/@@g')" "${X}" || true
-done
+git submodule sync --recursive >/dev/null
+git submodule update --init --recursive --jobs=200 >/dev/null
+
+# for X in $(git branch -r | grep -v HEAD)
+# do
+# 	git branch --track "$(echo "${X}" | sed -e 's@.*/@@g')" "${X}" || true
+# done
 
 ## Build ######################################################################
 
