@@ -53,15 +53,21 @@ fi
 
 ## Configuration ##############################################################
 
-if [ -f debian/changelog ]
-then
-	SOURCE="$(dpkg-parsechangelog | awk '/^Source:/ { print $2 }')"
-	VERSION="$(dpkg-parsechangelog | awk '/^Version:/ { print $2 }')"
-else
-	# Fallback to parsing debian/control if debian/changelog does not exist
-	SOURCE="$(awk '/^Source:/ { print $2 }' debian/control)"
-	VERSION="0"
-fi
+## TODO
+# if [ -f debian/changelog ]
+# then
+# 	SOURCE="$(dpkg-parsechangelog | awk '/^Source:/ { print $2 }')"
+# 	VERSION="$(dpkg-parsechangelog | awk '/^Version:/ { print $2 }')"
+# else
+# 	# Fallback to parsing debian/control if debian/changelog does not exist
+# 	SOURCE="$(awk '/^Source:/ { print $2 }' debian/control)"
+# 	VERSION="0"
+# fi
+
+git_tag_nearest="$(git describe --always --abbrev=0)"
+
+VERSION="${VERSION:-${git_tag_nearest}}"
+SOURCE="${SOURCE:-${git_tag_nearest}}"
 
 if [ "${SOURCE}" = "" ] || [ "${VERSION}" = "" ]
 then
