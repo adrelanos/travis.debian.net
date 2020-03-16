@@ -82,6 +82,7 @@ whoami
 
 TAG="travis.debian.net/${SOURCE}"
 TRAVIS_DEBIAN_LINTIAN="${TRAVIS_DEBIAN_LINTIAN:-true}"
+TRAVIS_DEBIAN_NO_BUILD="${TRAVIS_DEBIAN_NO_BUILD:-false}"
 TRAVIS_DEBIAN_BUILD_DIR="${TRAVIS_DEBIAN_BUILD_DIR:-/build}"
 TRAVIS_DEBIAN_TARGET_DIR="${TRAVIS_DEBIAN_TARGET_DIR:-../}"
 TRAVIS_DEBIAN_NETWORK_ENABLED="${TRAVIS_DEBIAN_NETWORK_ENABLED:-false}"
@@ -467,10 +468,14 @@ docker run --env=DEB_BUILD_OPTIONS="${DEB_BUILD_OPTIONS:-}" --env=DEB_BUILD_PROF
 ## Debugging.
 whoami
 
-Info "Copying build artefacts to ${TRAVIS_DEBIAN_TARGET_DIR}"
-mkdir -p "${TRAVIS_DEBIAN_TARGET_DIR}"
-docker cp "$(cat "${CIDFILE}")":"${TRAVIS_DEBIAN_BUILD_DIR}"/ - \
-	| tar xf - -C "${TRAVIS_DEBIAN_TARGET_DIR}" --strip-components=1
+if [ "${TRAVIS_DEBIAN_NO_BUILD}" = "true" ]; then
+   true
+else
+   Info "Copying build artefacts to ${TRAVIS_DEBIAN_TARGET_DIR}"
+   mkdir -p "${TRAVIS_DEBIAN_TARGET_DIR}"
+   docker cp "$(cat "${CIDFILE}")":"${TRAVIS_DEBIAN_BUILD_DIR}"/ - \
+      | tar xf - -C "${TRAVIS_DEBIAN_TARGET_DIR}" --strip-components=1
+fi
 
 ## Debugging.
 ls -la "${TRAVIS_DEBIAN_BUILD_DIR}" || true
@@ -507,24 +512,28 @@ ls -la "${TRAVIS_DEBIAN_BUILD_DIR}" || true
 ls -la "${TRAVIS_DEBIAN_TARGET_DIR}" || true
 ls -la "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes || true
 
-Info "$(basename "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes)"
-docker start "$(cat "${CIDFILE}")" >/dev/null
-Indent "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes
+if [ "${TRAVIS_DEBIAN_NO_BUILD}" = "true" ]; then
+   true
+else
+   Info "$(basename "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes)"
+   docker start "$(cat "${CIDFILE}")" >/dev/null
+   Indent "${TRAVIS_DEBIAN_TARGET_DIR}"/*.changes
 
-if ls "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo >/dev/null 2>&1
-then
-	Info "$(basename "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo)"
-	Indent "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo
-fi
+   if ls "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo >/dev/null 2>&1
+   then
+      Info "$(basename "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo)"
+      Indent "${TRAVIS_DEBIAN_TARGET_DIR}"/*.buildinfo
+   fi
 
-DEBC="$(mktemp)"
-docker exec "$(cat "${CIDFILE}")" /bin/sh -c "debc ${TRAVIS_DEBIAN_BUILD_DIR}/*.changes" > "${DEBC}"
-if [ "$(wc -l < "${DEBC}")" -lt 500 ]
-then
-	Info "debc ${TRAVIS_DEBIAN_BUILD_DIR}/*.changes"
-	Indent "${DEBC}"
+   DEBC="$(mktemp)"
+   docker exec "$(cat "${CIDFILE}")" /bin/sh -c "debc ${TRAVIS_DEBIAN_BUILD_DIR}/*.changes" > "${DEBC}"
+   if [ "$(wc -l < "${DEBC}")" -lt 500 ]
+   then
+      Info "debc ${TRAVIS_DEBIAN_BUILD_DIR}/*.changes"
+      Indent "${DEBC}"
+   fi
+   rm -f "${DEBC}"
 fi
-rm -f "${DEBC}"
 
 Info "Removing container"
 docker rm -f "$(cat "${CIDFILE}")" >/dev/null
