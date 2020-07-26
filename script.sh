@@ -33,6 +33,12 @@ whoami
 env
 set -eu
 
+netstat -tulpen || true
+ip addr show docker0 || true
+ifconfig || true
+
+exit 0
+
 Info () {
 	echo "I: ${*}" >&2
 }
